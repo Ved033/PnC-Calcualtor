@@ -13,7 +13,7 @@ class CalculatorUI(QMainWindow):
     
     def initUI(self):
         self.setWindowTitle('Multi-term Functional Calculator')
-        self.resize(500, 500)
+        self.resize(300, 500)
         icon_path = os.path.join(os.path.dirname(__file__), "calculator_icon.png")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
@@ -37,7 +37,7 @@ class CalculatorUI(QMainWindow):
         main_layout.addWidget(expr_label)
         
         self.expression_input = QLineEdit()
-        self.expression_input.setPlaceholderText('Example: 7*89-65+66-9p8/7c2*47+89+56*(7p4*6c3-90/5+45*(7*8p4))-90')
+        self.expression_input.setPlaceholderText('Example: 7*89-65+66-9p8/7c2*47+89+56*(7p4*6c3-90/5+45*(7*8p4))-90+3^4-e^2')
         self.expression_input.setMinimumHeight(40)
         main_layout.addWidget(self.expression_input)
         
@@ -47,7 +47,7 @@ class CalculatorUI(QMainWindow):
         main_layout.addWidget(instructions_label)
         
         instructions_text = QLabel(
-            '• Arithmetic: +, -, *, /\n'
+            '• Arithmetic: +, -, *, /, ^\n'
             '• Parentheses: ( )\n'
             '• Permutation: nPr (e.g., 7p4)\n'
             '• Combination: nCr (e.g., 7c2)\n'
@@ -116,9 +116,13 @@ class CalculatorUI(QMainWindow):
             expression = expression.replace(" ", "")
             
             # Basic validation
-            if not any(c in expression for c in ['+', '-', '*', '/', 'p', 'c', '!']):
-                self.result_display.setText("Error: Expression must contain operators")
-                return
+            if not any(c in expression for c in ['+', '-', '*', '/', 'p', 'c', '!', '^']):
+                if expression.isdigit() :
+                    self.result_display.setText(expression)
+                    return
+                else:
+                    self.result_display.setText("Error: Expression must contain operators")
+                    return
             
             self.result_display.setText(f"Calculating: {expression}\n\nRunning Java calculator...")
 
@@ -156,8 +160,12 @@ class CalculatorUI(QMainWindow):
 
         Sends the expression over stdin to the Java program.
         """
-        # Directory containing this script (also where compiled .class files live)
         cwd = os.path.dirname(__file__)
+
+        # Compile the Java source before running to ensure the latest code is executed.
+        compile_cmd = ['javac', 'sorter.java']
+        subprocess.run(compile_cmd, cwd=cwd, capture_output=True, text=True, check=True)
+
         cmd = ['java', '-cp', '.', 'sorter']
 
         # Ensure expression is a single line
