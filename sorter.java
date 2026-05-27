@@ -19,7 +19,7 @@ public class sorter {
         ArrayList<String> inList = new ArrayList<>();
         for (int i = 0; i < in_length; i++) {
             char ch = input.charAt(i);
-            if (ch == '+' || ch == '-' || ch == '/' || ch == '*' || ch == '(' || ch == ')') {
+            if (ch == '+' || ch == '-' || ch == '/' || ch == '*' || ch == '(' || ch == ')' || ch == '^') {
                 if (opCache + 1 < i) {
                     inList.add(input.substring(opCache + 1, i));
                 }
@@ -98,6 +98,7 @@ public class sorter {
         List<Integer> multiply = new ArrayList<>();
         List<Integer> addition = new ArrayList<>();
         List<Integer> subtraction = new ArrayList<>();
+        List<Integer> exponent = new ArrayList<>();
 
         for (int i = 0; i < tempo.size(); i++) {
             String term = tempo.get(i);
@@ -113,14 +114,18 @@ public class sorter {
             }if(Objects.equals(term, "-")) {
                 System.out.println("op-" + i); // Debugging output
                 subtraction.add(i);
+            }if(Objects.equals(term, "^")) {
+                System.out.println("op-" + i); // Debugging output
+                exponent.add(i);
             }
         }
         System.out.println("divide-" + divide); // Debugging output
         System.out.println("multiply-" + multiply); // Debugging output
         System.out.println("addition-" + addition); // Debugging output
         System.out.println("subtraction-" + subtraction); // Debugging output
+        System.out.println("exponent-" + exponent); // Debugging output
 
-        calculator(inputList, divide, multiply, addition, subtraction, tempo);
+        calculator(inputList, divide, multiply, addition, subtraction, exponent, tempo);
 
     }
     /**
@@ -166,7 +171,7 @@ public class sorter {
         double ans = 0; 
 
         // Determine if left or right contains '!'
-        boolean fleft = left.contains("!");
+        boolean fleft = left.contains("!"); 
         boolean fright = right.contains("!");
 
         // Determine if left contains 'p' or 'c' 
@@ -175,7 +180,10 @@ public class sorter {
 
         // Determine if right contains 'p' or 'c' 
         boolean pRight = right.contains("p"); 
-        boolean cRight = right.contains("c"); 
+        boolean cRight = right.contains("c");
+        
+        boolean eLeft = left.contains("e");
+        boolean eRight = right.contains("e");
 
         double IntOfLeft = 0; 
         double IntOfRight = 0; 
@@ -194,6 +202,10 @@ public class sorter {
             System.out.println("lf-" + IntOfLeft); // Debugging Output
             IntOfLeft = Factorial.factoria(IntOfLeft);
             System.out.println("clf-" + IntOfLeft); // Debugging Output
+        }
+        else if (eLeft){
+            IntOfLeft = Math.E;
+            System.out.println("le" + IntOfLeft);
         }
         else { 
             IntOfLeft = Double.parseDouble(left); 
@@ -214,7 +226,11 @@ public class sorter {
             System.out.println("rf-" + IntOfRight); // Debugging Output
             IntOfRight = Factorial.factoria(IntOfRight);
             System.out.println("crf-" + IntOfRight); // Debugging Output
-        } 
+        }
+        else if (eRight){
+            IntOfLeft = Math.E;
+            System.out.println("re" + IntOfRight);
+        }
         else { 
             IntOfRight = Double.parseDouble(right);
             System.out.println("rn-" + IntOfRight); // Debugging Output
@@ -226,6 +242,7 @@ public class sorter {
             case "-" -> ans = IntOfLeft - IntOfRight;
             case "*" -> ans = IntOfLeft * IntOfRight;
             case "/" -> ans = IntOfLeft / IntOfRight;
+            case "^" -> ans = (double)Math.pow(IntOfLeft, IntOfRight);
             default -> throw new IllegalArgumentException("Invalid operation: " + op);
         } 
         String finalAns = String.valueOf(ans);
@@ -341,6 +358,7 @@ public class sorter {
                             List<Integer> multiply,
                             List<Integer> addition,
                             List<Integer> subtraction,
+                            List<Integer> exponent,
                             List<String> tempo){
         
         Scanner sc = new Scanner(System.in);
@@ -394,6 +412,29 @@ public class sorter {
                 System.out.println("some error occurred: " + e.getMessage());
             }
 
+            
+        }for (int i = 0; i<exponent.size(); i++) {
+            try {
+                String left = tempo.get(exponent.get(i)-1);
+                String right = tempo.get(exponent.get(i)+1);
+
+                int rightIndex = tempo.indexOf(right);
+                int leftIndex = tempo.indexOf(left);
+
+                System.out.println("r-" + right); // Debugging output
+                System.out.println("l-" + left); // Debugging output
+        
+                String output = operations("^", left, right);
+                System.out.println("s- " +  output); // Debugging Output
+                
+                replaceElements(inputList, tempo, leftIndex, rightIndex, output);
+                System.out.println("tempo in s"+ tempo); // Debugging Output
+
+                break;
+
+            } catch (Exception e) {
+                System.out.println("some error occurred: " + e.getMessage());
+            }
             
         }for (int i = 0; i<multiply.size(); i++) {
             try {
@@ -473,10 +514,7 @@ public class sorter {
             
         }
     }
-    private static void elif(boolean b) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'elif'");
-    }
+    
     /**
      * The main function of the program,
      * It takes the input from the user and calls the sortInput method,
@@ -493,14 +531,15 @@ public class sorter {
         System.out.println("╚════════════════════════════════════════════════════════════════════════════════╝\n");
         
         System.out.println("Instructions:");
-        System.out.println("  1. Ensure that the input has valid operators (+, -, *, /, (, ))");
+        System.out.println("  1. Ensure that the input has valid operators (+, -, *, /, ^) ");
         System.out.println("  2. Operators must be placed beside parentheses to avoid errors");
-        System.out.println("  3. 'p' denotes Permutation (e.g., 7p4 = P(7,4))");
-        System.out.println("  4. 'c' denotes Combination (e.g., 7c2 = C(7,2))");
-        System.out.println("  5. '!' denotes Factorial (e.g., 5! = 120)\n");
+        System.out.println("  3. The braces are needed to only parentheses '(',')'");
+        System.out.println("  4. 'p' denotes Permutation (e.g., 7p4 = P(7,4))");
+        System.out.println("  5. 'c' denotes Combination (e.g., 7c2 = C(7,2))");
+        System.out.println("  6. '!' denotes Factorial (e.g., 5! = 120)\n");
         
         System.out.println("Example Input:");
-        System.out.println("  7*89-65+66-9p8/7c2*47+89+56*(7p4*6c3-90/5+45*(7*8p4))-90\n");
+        System.out.println("  7*89-65+66-9p8/7c2*47+56*(7p4*6c3-90/5+45*(7*8p4))-90+ 3^4 -e^2\n");
         
         System.out.print("═══════════════════════════════════════════════════════════════════════════════════\n");
         System.out.print("Enter your mathematical expression here:\n");
@@ -515,6 +554,8 @@ public class sorter {
         indicissor(inputList);
         
         // Example input:
-        //               7*89-65+66 -9p8 / 7c2 *47+89+56 *(7p4 * 6c3 -90/5 +45*(7*8p4))-90
+        //               7*89-65+66 -9p8 / 7c2 *47+89+56 *(7p4 * 6c3 -90/5 +45*(7*8p4))-90+ 3^4 
+
+        sc.close();
     }
 }
