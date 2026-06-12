@@ -133,7 +133,8 @@ class CalculatorUI(QMainWindow):
             '• Parentheses: ( )\n'
             '• Permutation: nPr (e.g., 7p4)\n'
             '• Combination: nCr (e.g., 7c2)\n'
-            '• Factorial: n! (e.g., 5!)'
+            '• Factorial: n! (e.g., 5!)\n' 
+            '• Logarithmic: (e.g., ln(2) = 0.693, log(2) = 0.301, log2(2) = 1)'
         )
         instructions_text.setStyleSheet("font-size: 12px; margin-left: 10px;")
         main_layout.addWidget(instructions_text, 5, 0)
@@ -287,7 +288,7 @@ class CalculatorUI(QMainWindow):
             print("Replaced ' ', '' ")
 
             #Basic Validation
-            if not any(c in expr for c in ['+', '-', '*', '/', 'p', 'c', '!', '^', '.' ,'e']):
+            if not any(c in expr for c in ['+', '-', '*', '/', 'p', 'c', '!', '^', '.' ,'e', 'ln', 'log']):
                 print("Char validtion: pass")
                 if self.is_float(expr):
                     self.resDisplay.setStyleSheet(fontSize_success)
