@@ -717,9 +717,9 @@ public class sorter {
         System.out.println("  3. The braces are needed to only parentheses '(',')'");
         System.out.println("  4. 'p' denotes Permutation (e.g., 7p4 = P(7,4))");
         System.out.println("  5. 'c' denotes Combination (e.g., 7c2 = C(7,2))");
-        System.out.println("  6. '!' denotes Factorial (e.g., 5! = 120)\n");
-        System.out.println("  7. 'ln' denotes Log with base 'e' (e.g., ln(2) = 0.693)\n");
-        System.out.println("  8. 'log' denotes Log with base '10' (e.g., log(2) = 0.301)\n");
+        System.out.println("  6. '!' denotes Factorial (e.g., 5! = 120)");
+        System.out.println("  7. 'ln' denotes Log with base 'e' (e.g., ln(2) = 0.693)");
+        System.out.println("  8. 'log' denotes Log with base '10' (e.g., log(2) = 0.301)");
         System.out.println("  9. 'log2' denotes Log with base '2' (e.g., ln2(2) = 1)\n");
 
         
